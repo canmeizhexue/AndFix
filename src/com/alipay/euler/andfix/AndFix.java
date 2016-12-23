@@ -101,7 +101,7 @@ public class AndFix {
 	}
 
 	/**
-	 * initialize
+	 * initialize 初始化
 	 * 
 	 * @return true if initialize success
 	 */

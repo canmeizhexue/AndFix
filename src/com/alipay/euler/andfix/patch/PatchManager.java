@@ -17,6 +17,13 @@
 
 package com.alipay.euler.andfix.patch;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.util.Log;
+
+import com.alipay.euler.andfix.AndFixManager;
+import com.alipay.euler.andfix.util.FileUtil;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -27,18 +34,11 @@ import java.util.SortedSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.util.Log;
-
-import com.alipay.euler.andfix.AndFixManager;
-import com.alipay.euler.andfix.util.FileUtil;
-
 /**
  * patch manager
  * 
  * @author sanping.li@alipay.com
- * 
+ * 对多个修复包进行管理，
  */
 public class PatchManager {
 	private static final String TAG = "PatchManager";
@@ -76,6 +76,7 @@ public class PatchManager {
 	public PatchManager(Context context) {
 		mContext = context;
 		mAndFixManager = new AndFixManager(mContext);
+		//修复包最后放在沙盒的特定目录里面，，，，/data/data/xxx/files/apatch/xxx.apatch
 		mPatchDir = new File(mContext.getFilesDir(), DIR);
 		mPatchs = new ConcurrentSkipListSet<Patch>();
 		mLoaders = new ConcurrentHashMap<String, ClassLoader>();
@@ -99,9 +100,11 @@ public class PatchManager {
 				Context.MODE_PRIVATE);
 		String ver = sp.getString(SP_VERSION, null);
 		if (ver == null || !ver.equalsIgnoreCase(appVersion)) {
+			//俩个的版本不一致，清空之前的补丁，
 			cleanPatch();
 			sp.edit().putString(SP_VERSION, appVersion).commit();
 		} else {
+			//加载沙盒中的所有补丁包，
 			initPatchs();
 		}
 	}
@@ -142,7 +145,7 @@ public class PatchManager {
 		}
 	}
 
-	/**
+	/**主要用在app正在运行的时候，下载补丁包，然后将它加载进来
 	 * add patch at runtime
 	 * 
 	 * @param path
@@ -217,7 +220,7 @@ public class PatchManager {
 		}
 	}
 
-	/**
+	/**将补丁包中的类加载进来，并且替换要修复的方法
 	 * load specific patch
 	 * 
 	 * @param patch

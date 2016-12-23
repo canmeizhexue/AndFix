@@ -52,6 +52,8 @@ static void* dvm_dlsym(void *hand, const char *name) {
 
 extern jboolean __attribute__ ((visibility ("hidden"))) dalvik_setup(
 		JNIEnv* env, int apilevel) {
+		// 打开系统的libdvm.so文件，获取俩个函数指针
+		//dlopen以指定模式打开指定的动态连接库文件，并返回一个句柄给调用进程，dlerror返回出现的错误，dlsym通过句柄和连接符名称获取函数名或者变量名，dlclose来卸载打开的库
 	void* dvm_hand = dlopen("libdvm.so", RTLD_NOW);
 	if (dvm_hand) {
 		dvmDecodeIndirectRef_fnPtr = dvm_dlsym(dvm_hand,
@@ -66,6 +68,7 @@ extern jboolean __attribute__ ((visibility ("hidden"))) dalvik_setup(
 		if (!dvmThreadSelf_fnPtr) {
 			return JNI_FALSE;
 		}
+		//获取到指定的类的指定方法
 		jclass clazz = env->FindClass("java/lang/reflect/Method");
 		jClassMethod = env->GetMethodID(clazz, "getDeclaringClass",
 						"()Ljava/lang/Class;");

@@ -17,13 +17,13 @@
 
 package com.alipay.euler.andfix;
 
-import java.lang.reflect.Method;
-
 import android.annotation.SuppressLint;
+
+import java.lang.reflect.Method;
 
 /**
  * Compatibility
- * 
+ * 是否支持热修复，因为目前不是所有机型都支持这种修复，，
  * @author sanping.li@alipay.com
  * 
  */
@@ -31,7 +31,7 @@ public class Compat {
 	public static boolean isChecked = false;
 	public static boolean isSupport = false;
 
-	/**
+	/**会去进行so层的初始化,
 	 * whether support on the device
 	 * 
 	 * @return true if the device support AndFix
@@ -45,7 +45,7 @@ public class Compat {
 		if (!isYunOS() && AndFix.setup() && isSupportSDKVersion()) {
 			isSupport = true;
 		}
-
+		//黑名单里面的机型都不支持，，
 		if (inBlackList()) {
 			isSupport = false;
 		}

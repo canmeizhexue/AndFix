@@ -17,6 +17,12 @@
 
 package com.alipay.euler.andfix;
 
+import android.content.Context;
+import android.util.Log;
+
+import com.alipay.euler.andfix.annotation.MethodReplace;
+import com.alipay.euler.andfix.security.SecurityChecker;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -24,12 +30,6 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import android.content.Context;
-import android.util.Log;
-
-import com.alipay.euler.andfix.annotation.MethodReplace;
-import com.alipay.euler.andfix.security.SecurityChecker;
 
 import dalvik.system.DexFile;
 
@@ -74,6 +74,7 @@ public class AndFixManager {
 		mSupport = Compat.isSupport();
 		if (mSupport) {
 			mSecurityChecker = new SecurityChecker(mContext);
+			//主要用来释放dex文件，，
 			mOptDir = new File(mContext.getFilesDir(), DIR);
 			if (!mOptDir.exists() && !mOptDir.mkdirs()) {// make directory fail
 				mSupport = false;
@@ -85,7 +86,7 @@ public class AndFixManager {
 		}
 	}
 
-	/**
+	/**补丁文件
 	 * delete optimize file of patch file
 	 * 
 	 * @param file

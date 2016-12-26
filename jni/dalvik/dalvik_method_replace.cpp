@@ -81,15 +81,16 @@ extern jboolean __attribute__ ((visibility ("hidden"))) dalvik_setup(
 
 extern void __attribute__ ((visibility ("hidden"))) dalvik_replaceMethod(
 		JNIEnv* env, jobject src, jobject dest) {
+		//调用java层的方法
 	jobject clazz = env->CallObjectMethod(dest, jClassMethod);
 	ClassObject* clz = (ClassObject*) dvmDecodeIndirectRef_fnPtr(
 			dvmThreadSelf_fnPtr(), clazz);
 	clz->status = CLASS_INITIALIZED;
-
+    //通过java层的方法对象获取指定方法结构体信息
 	Method* meth = (Method*) env->FromReflectedMethod(src);
 	Method* target = (Method*) env->FromReflectedMethod(dest);
 	LOGD("dalvikMethod: %s", meth->name);
-
+    //在C层进行方法信息的替换
 //	meth->clazz = target->clazz;
 	meth->accessFlags |= ACC_PUBLIC;
 	meth->methodIndex = target->methodIndex;

@@ -48,11 +48,11 @@ public class AndFix {
 
 	/**
 	 * replace method's body
-	 * 
+	 * 用补丁包里面的方法替换到apk里面有bug的方法
 	 * @param src
-	 *            source method
+	 *            source method 原来apk里面的方法
 	 * @param dest
-	 *            target method
+	 *            target method 补丁包里面的方法
 	 * 
 	 */
 	public static void addReplaceMethod(Method src, Method dest) {

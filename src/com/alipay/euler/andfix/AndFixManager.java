@@ -110,10 +110,10 @@ public class AndFixManager {
 	}
 
 	/**
-	 * fix
+	 * fix，进行方法替换
 	 * 
 	 * @param file
-	 *            patch file
+	 *            patch file 补丁文件
 	 * @param classLoader
 	 *            classloader of class that will be fixed
 	 * @param classes
@@ -124,7 +124,7 @@ public class AndFixManager {
 		if (!mSupport) {
 			return;
 		}
-
+		//对补丁文件进行签名验证
 		if (!mSecurityChecker.verifyApk(file)) {// security check fail
 			return;
 		}
@@ -144,7 +144,7 @@ public class AndFixManager {
 					return;
 				}
 			}
-
+			//释放dex文件
 			final DexFile dexFile = DexFile.loadDex(file.getAbsolutePath(),
 					optfile.getAbsolutePath(), Context.MODE_PRIVATE);
 
@@ -168,6 +168,7 @@ public class AndFixManager {
 					return clazz;
 				}
 			};
+			//dex里面所有的classes
 			Enumeration<String> entrys = dexFile.entries();
 			Class<?> clazz = null;
 			while (entrys.hasMoreElements()) {
@@ -175,6 +176,7 @@ public class AndFixManager {
 				if (classes != null && !classes.contains(entry)) {
 					continue;// skip, not need fix
 				}
+				//加载类
 				clazz = dexFile.loadClass(entry, patchClassLoader);
 				if (clazz != null) {
 					fixClass(clazz, classLoader);
@@ -188,7 +190,7 @@ public class AndFixManager {
 	/**
 	 * fix class
 	 * 
-	 * @param clazz
+	 * @param clazz 补丁包里面生成的类
 	 *            class
 	 */
 	private void fixClass(Class<?> clazz, ClassLoader classLoader) {
@@ -200,8 +202,8 @@ public class AndFixManager {
 			methodReplace = method.getAnnotation(MethodReplace.class);
 			if (methodReplace == null)
 				continue;
-			clz = methodReplace.clazz();
-			meth = methodReplace.method();
+			clz = methodReplace.clazz();//被修复的方法所在的类名
+			meth = methodReplace.method();//被修复的方法
 			if (!isEmpty(clz) && !isEmpty(meth)) {
 				replaceMethod(classLoader, clz, meth, method);
 			}
@@ -214,7 +216,7 @@ public class AndFixManager {
 	 * @param classLoader classloader
 	 * @param clz class
 	 * @param meth name of target method 
-	 * @param method source method
+	 * @param method source method 补丁包里面的方法
 	 */
 	private void replaceMethod(ClassLoader classLoader, String clz,
 			String meth, Method method) {
@@ -222,7 +224,7 @@ public class AndFixManager {
 			String key = clz + "@" + classLoader.toString();
 			Class<?> clazz = mFixedClass.get(key);
 			if (clazz == null) {// class not load
-				Class<?> clzz = classLoader.loadClass(clz);
+				Class<?> clzz = classLoader.loadClass(clz);//
 				// initialize target class
 				clazz = AndFix.initTargetClass(clzz);
 			}

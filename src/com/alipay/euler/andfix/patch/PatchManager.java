@@ -202,7 +202,7 @@ public class PatchManager {
 		}
 	}
 
-	/**
+	/**进行修复工作
 	 * load patch,call when application start
 	 * 
 	 */

@@ -99,7 +99,7 @@ public class SecurityChecker {
 
 	/**
 	 * @param path
-	 *            Apk file
+	 *            Apk file 补丁文件，是一个jar文件
 	 * @return true if verify apk success
 	 */
 	public boolean verifyApk(File path) {
@@ -117,7 +117,7 @@ public class SecurityChecker {
 				return false;
 			}
 			loadDigestes(jarFile, jarEntry);
-			Certificate[] certs = jarEntry.getCertificates();
+			Certificate[] certs = jarEntry.getCertificates();//这个方法和getCodeSigners需要将对应的jarEntry的输入流读取完了才能调用，也就是必须要调用上面loadDigestes方法
 			if (certs == null) {
 				return false;
 			}
@@ -155,6 +155,7 @@ public class SecurityChecker {
 		if (certs.length > 0) {
 			for (int i = certs.length - 1; i >= 0; i--) {
 				try {
+					//验证是否已经使用了与指定公钥相应的私钥签署了此证书。
 					certs[i].verify(mPublicKey);
 					return true;
 				} catch (Exception e) {
